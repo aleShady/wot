@@ -10,7 +10,7 @@ def start(message):
   bot.send_message(message.chat.id,"ciao")
   
   while True:
-  try:
-    bot.polling()
-  except:
-    time.sleep(5)
+    try:
+      bot.polling()
+    except:
+      time.sleep(5)
