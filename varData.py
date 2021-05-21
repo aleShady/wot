@@ -1,1 +1,0 @@
-adminToken = "1815441409:AAE22OLP3DOblzIWWk2IvjN0Q_TcniS2YSo"
