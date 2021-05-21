@@ -11,6 +11,6 @@ def start(message):
   
   while True:
     try:
-      bot.polling()
+      bot.polling() 
     except:
       time.sleep(5)
