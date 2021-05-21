@@ -1,4 +1,4 @@
 flask
 flask_session
-gumicorn
+gunicorn
 python-telegram-bot
