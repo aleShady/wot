@@ -18,7 +18,7 @@ app = Flask(__name__)
 @app.route("/", methods=['GET', 'POST'])
 
 def webhook():
-    bot = telegram.Bot(token=os.environ["1815441409:AAE22OLP3DOblzIWWk2IvjN0Q_TcniS2YSo"])
+    bot = telegram.Bot(token=os.environ["YOURAPIKEY"])
     if request.method == "POST":
         update = telegram.Update.de_json(request.get_json(force=True), bot)
         chat_id     = update.effective_chat.id
