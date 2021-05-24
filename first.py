@@ -1,20 +1,10 @@
-from telegram.ext import Updater, CommandHandler, MessageHandler,    Filters, InlineQueryHandler
+from telegram.ext import Updater
 
+u = Updater('TOKEN', use_context=True)
+j = u.job_queue
 
-def sayhi(bot, job):
-    job.context.message.reply_text("hi")
+def callback_minute(context: telegram.ext.CallbackContext):
+    context.bot.send_message(chat_id='-1001230622142', 
+                             text='One message every minute')
 
-def time(bot, update,job_queue):
-    job = job_queue.run_repeating(sayhi, 5, context=update)
-
-def main():
-    updater = Updater("BOT TOKEN")
-    dp = updater.dispatcher
-    dp.add_handler(MessageHandler(Filters.text , time,pass_job_queue=True))
-
-
-    updater.start_polling()
-    updater.idle()
-
-if __name__ == '__main__':
-    main()
+job_minute = j.run_repeating(callback_minute, interval=60, first=10)
