@@ -1,23 +1,20 @@
-from flask import Flask, render_template, request
+from telegram.ext import Updater, CommandHandler, MessageHandler,    Filters, InlineQueryHandler
 
-import os
-import telegram
 
-app = Flask(__name__)
+def sayhi(bot, job):
+    job.context.message.reply_text("hi")
 
-@app.route("/", methods=['GET', 'POST'])
+def time(bot, update,job_queue):
+    job = job_queue.run_repeating(sayhi, 5, context=update)
 
-def webhook():
-    bot = telegram.Bot(token=os.environ["YOURAPIKEY"])
-    if request.method == "POST":
-        update = telegram.Update.de_json(request.get_json(force=True), bot)
-        chat_id     = update.effective_chat.id
-        text        = update.message.text
-        first_name  = update.effective_chat.first_name
-        # Reply with the same message
-        bot.sendMessage(chat_id=chat_id, text=f"{text} {first_name}")
-        return 'ok'
-    return 'error'
+def main():
+    updater = Updater("BOT TOKEN")
+    dp = updater.dispatcher
+    dp.add_handler(MessageHandler(Filters.text , time,pass_job_queue=True))
 
-def index():
-    return webhook()
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
