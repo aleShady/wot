@@ -1,13 +1,12 @@
-from telegram.ext import Updater
-updater = Updater(token='TOKEN', use_context=True)
+# main.py
+import os
+import telegram
 
-dispatcher = updater.dispatcher
-import logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                     level=logging.INFO)
-
-
-def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
-
-    updater.start_polling()
+def webhook(request):
+    bot = telegram.Bot(token=os.environ["TELEGRAM_TOKEN"])
+    if request.method == "POST":
+        update = telegram.Update.de_json(request.get_json(force=True), bot)
+        chat_id = update.message.chat.id
+        # Reply with the same message
+        bot.sendMessage(chat_id=chat_id, text=update.message.text)
+    return "ok"
