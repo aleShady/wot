@@ -1,0 +1,4 @@
+flask
+flasksession
+gunicorn
+python-telegram-bot
