@@ -1,4 +1,2 @@
-pytelegrambotapi
 gunicorn
-gtts
-praw
+pytelegrambotapi
