@@ -1,38 +1,61 @@
-import telebot
-from telebot import types
-import time
-
-TOKEN = "1815441409:AAE22OLP3DOblzIWWk2IvjN0Q_TcniS2YSo"
-bot = telebot.TeleBot(TOKEN)
+import EzTG
 
 
-@bot.inline_handler(lambda query: query.query == 'test')
-def test(inline_query):
-    r = types.InlineQueryResultArticle(
-        # The id of our inline result
-        id='1',
-        title='test',
-        input_message_content=types.InputTextMessageContent(
-            'I am a message'
-        )
-    )
-    bot.answer_inline_query(inline_query.id, [r])
+def callback(bot, update):
+    # here's your bot
+    if 'message' in update:
+        # messages "handler"
+        message_id = update['message']['message_id']  # https://core.telegram.org/bots/api#message
+        user_id = update['message']['from']['id']
+        chat_id = update['message']['chat']['id']
+        text = update['message']['text']
+
+        if text == '/start':
+            bot.sendMessage(chat_id=chat_id, text='Bot del tutorial di FJ Tech')  # you can find method parameters in https://core.telegram.org/bots/api#sendmessage
+
+        if text == '/inline':
+            keyboard = EzTG.Keyboard('inline')
+            keyboard.add('Example', 'callback data')
+            keyboard.add('Example 2', 'callback data 2')
+            keyboard.newLine()
+            keyboard.add('Example 3', 'https://google.it')
+            bot.sendMessage(chat_id=chat_id, text='Test',
+                            reply_markup=keyboard)
+
+        if text == '/keyboard':
+            keyboard = EzTG.Keyboard('keyboard')
+            keyboard.add('Example 1')
+            keyboard.add('Example 2')
+            keyboard.newLine()
+            keyboard.add('Example 3')
+            bot.sendMessage(chat_id=chat_id, text='Test',
+                            reply_markup=keyboard)
+
+        if text == '/hidekb':
+            keyboard = EzTG.Keyboard('remove')
+            bot.sendMessage(chat_id=chat_id,
+                            text='Adios keyboard', reply_markup=keyboard)
+    if 'callback_query' in update:
+        # callback query "handler"
+        message_id = update['callback_query']['message']['message_id']
+        user_id = update['callback_query']['from']['id']
+        chat_id = update['callback_query']['message']['chat']['id']
+        cb_id = update['callback_query']['id']
+        cb_data = update['callback_query']['data']
+
+        if cb_data == 'callback data':
+            bot.answerCallbackQuery(callback_query_id=cb_id, text='example #1')  # you can find method parameters in https://core.telegram.org/bots/api#answercallbackquery
+            keyboard = EzTG.Keyboard('inline')
+            keyboard.add('Example 2', 'callback data 2')
+            bot.editMessageText(chat_id=chat_id, message_id=message_id,
+                                text='New message', reply_markup=keyboard)  # you can find method parameters in https://core.telegram.org/bots/api#editmessagetext
+
+        if cb_data == 'callback data 2':
+            bot.answerCallbackQuery(
+                callback_query_id=cb_id, text='example #2 [alert]', show_alert=True)
+            bot.editMessageText(chat_id=chat_id, message_id=message_id,
+                                text='New message 2', reply_markup={})
 
 
-@bot.inline_handler(lambda query: query.query == 'image')
-def image(inline_query):
-    r = types.InlineQueryResultPhoto(
-        id='11',
-        photo_url='https://images.assettype.com/swarajya/2020-08/a46bd36a-e65b-4b0b-91d9-c0fcac98c518/telegram.jpg?w=1200&h=800',
-        thumb_url='https://images.assettype.com/swarajya/2020-08/a46bd36a-e65b-4b0b-91d9-c0fcac98c518/telegram.jpg?w=1200&h=800'
-    )
-
-    bot.answer_inline_query(inline_query.id, [r])
-
-
-while True:
-    try:
-        bot.polling(True)
-    except Exception as e:
-        print(e)
-        time.sleep(5)
+bot = EzTG.EzTG(token='1815441409:AAE22OLP3DOblzIWWk2IvjN0Q_TcniS2YSo',
+                callback=callback)
