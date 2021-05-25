@@ -1,1 +1,1 @@
-web: gunicorn tutorial6:app
+web: gunicorn main:app
