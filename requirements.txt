@@ -1,4 +1,4 @@
-django
+flask
+flask_session
 gunicorn
-django-heroku
-requests
+python-telegram-bot
