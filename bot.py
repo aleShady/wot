@@ -16,16 +16,21 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 TOKEN = '1815441409:AAE22OLP3DOblzIWWk2IvjN0Q_TcniS2YSo'
 
+def echo(update, context):
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
+
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
-def start(update, context):
-    """Send a message when the command /start is issued."""
-      update.message.reply_text('Ciao! Usa /set <secondi> per impostare il timer')
+def start(update, context) -> None:
+    update.message.reply_text('Hi! Use /set <seconds> to set a timer')
 
-def alarm(update, context):
-     """Send the alarm message."""
+
+def alarm(context) -> None:
+    """Send the alarm message."""
     job = context.job
     context.bot.send_message(job.context, text='Beep!')
+
 
 def remove_job_if_exists(name: str, context) -> bool:
     """Remove job with given name. Returns whether job was removed."""
@@ -36,11 +41,8 @@ def remove_job_if_exists(name: str, context) -> bool:
         job.schedule_removal()
     return True
 
-def error(update, context):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-    
-def set_timer(update: Update, context) -> None:
+
+def set_timer(update, context) -> None:
     """Add a job to the queue."""
     chat_id = update.message.chat_id
     try:
@@ -62,12 +64,17 @@ def set_timer(update: Update, context) -> None:
         update.message.reply_text('Usage: /set <seconds>')
 
 
-def unset(update: Update, context) -> None:
+def unset(update, context) -> None:
     """Remove the job if the user changed their mind."""
     chat_id = update.message.chat_id
     job_removed = remove_job_if_exists(str(chat_id), context)
     text = 'Timer successfully cancelled!' if job_removed else 'You have no active timer.'
     update.message.reply_text(text)
+
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
     
 def main():
     """Start the bot."""
@@ -81,11 +88,10 @@ def main():
 
     
     # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(CommandHandler("help", start))
-    dispatcher.add_handler(CommandHandler("set", set_timer))
-    dispatcher.add_handler(CommandHandler("unset", unset))
-
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("unset", help))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
 
