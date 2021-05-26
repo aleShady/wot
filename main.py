@@ -1,32 +1,69 @@
-#webhook heroku - this tutorial works on cloud. 
-#   to run flask on local server
-#       export FLASK_APP=tutorial6
-#       flask run
-#https://github.com/python-telegram-bot/python-telegram-bot/wiki/Where-to-host-Telegram-Bots#vps
-#https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks
-#https://python-telegram-bot.readthedocs.io/
-#https://seminar.io/2018/09/03/building-serverless-telegram-bot/
-#https://www.heroku.com/
-from flask import Flask, render_template, request
+"""
+Simple Bot to reply to Telegram messages taken from the python-telegram-bot examples.
+Deployed using heroku.
+Author: liuhh02 https://medium.com/@liuhh02
+"""
 
+import logging
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
-import telegram
+PORT = int(os.environ.get('PORT', 5000))
 
-app = Flask(__name__)
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
 
-@app.route("/", methods=['GET', 'POST'])
+logger = logging.getLogger(__name__)
+TOKEN = 'YOURTELEGRAMBOTTOKEN'
 
-def webhook():
-    bot = telegram.Bot(token=os.environ["YOURAPIKEY"])
-    if request.method == "POST":
-        update = telegram.Update.de_json(request.get_json(force=True), bot)
-        chat_id     = update.effective_chat.id
-        text        = update.message.text
-        first_name  = update.effective_chat.first_name
-        # Reply with the same message
-        bot.sendMessage(chat_id=chat_id, text=f"{text} {first_name}")
-        return 'ok'
-    return 'error'
+# Define a few command handlers. These usually take the two arguments update and
+# context. Error handlers also receive the raised TelegramError object in error.
+def start(update, context):
+    """Send a message when the command /start is issued."""
+    update.message.reply_text('Hi!')
 
-def index():
-    return webhook()
+def help(update, context):
+    """Send a message when the command /help is issued."""
+    update.message.reply_text('Help!')
+
+def echo(update, context):
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
+
+def error(update, context):
+    """Log Errors caused by Updates."""
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
+def main():
+    """Start the bot."""
+    # Create the Updater and pass it your bot's token.
+    # Make sure to set use_context=True to use the new context based callbacks
+    # Post version 12 this will no longer be necessary
+    updater = Updater(TOKEN, use_context=True)
+
+    # Get the dispatcher to register handlers
+    dp = updater.dispatcher
+
+    # on different commands - answer in Telegram
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help))
+
+    # on noncommand i.e message - echo the message on Telegram
+    dp.add_handler(MessageHandler(Filters.text, echo))
+
+    # log all errors
+    dp.add_error_handler(error)
+
+    # Start the Bot
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path=TOKEN)
+    updater.bot.setWebhook('https://yourherokuappname.herokuapp.com/' + TOKEN)
+
+    # Run the bot until you press Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT. This should be used most of the time, since
+    # start_polling() is non-blocking and will stop the bot gracefully.
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
