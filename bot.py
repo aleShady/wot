@@ -27,7 +27,7 @@ def alarm(update, context):
     job = context.job
     context.bot.send_message(job.context, text='Beep!')
 
-ef remove_job_if_exists(name: str, context: CallbackContext) -> bool:
+def remove_job_if_exists(name: str, context: CallbackContext) -> bool:
     """Remove job with given name. Returns whether job was removed."""
     current_jobs = context.job_queue.get_jobs_by_name(name)
     if not current_jobs:
