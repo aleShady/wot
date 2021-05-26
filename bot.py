@@ -27,7 +27,7 @@ def alarm(update, context):
     job = context.job
     context.bot.send_message(job.context, text='Beep!')
 
-def remove_job_if_exists(name: str, context: CallbackContext) -> bool:
+def remove_job_if_exists(name: str, context) -> bool:
     """Remove job with given name. Returns whether job was removed."""
     current_jobs = context.job_queue.get_jobs_by_name(name)
     if not current_jobs:
@@ -39,7 +39,8 @@ def remove_job_if_exists(name: str, context: CallbackContext) -> bool:
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
-def set_timer(update: Update, context: CallbackContext) -> None:
+    
+def set_timer(update: Update, context) -> None:
     """Add a job to the queue."""
     chat_id = update.message.chat_id
     try:
@@ -61,7 +62,7 @@ def set_timer(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('Usage: /set <seconds>')
 
 
-def unset(update: Update, context: CallbackContext) -> None:
+def unset(update: Update, context) -> None:
     """Remove the job if the user changed their mind."""
     chat_id = update.message.chat_id
     job_removed = remove_job_if_exists(str(chat_id), context)
