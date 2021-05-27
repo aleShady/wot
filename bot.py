@@ -1,9 +1,3 @@
-"""
-Simple Bot to reply to Telegram messages taken from the python-telegram-bot examples.
-Deployed using heroku.
-Author: liuhh02 https://medium.com/@liuhh02
-"""
-
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import os
@@ -23,13 +17,13 @@ def echo(update, context):
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
 def start(update, context) -> None:
-    update.message.reply_text('Hi! Use /set <seconds> to set a timer')
+    update.message.reply_text('Ciao! Usa il comandi /set per impostare il timer del messaggio')
 
 
 def alarm(context) -> None:
-    """Send the alarm message."""
+    """Messaggio da inviare"""
     job = context.job
-    context.bot.send_message(job.context, text='Beep!')
+    context.bot.send_message(job.context, text='Ciccia')
 
 
 def remove_job_if_exists(name: str, context) -> bool:
@@ -44,25 +38,25 @@ def remove_job_if_exists(name: str, context) -> bool:
 
 def set_timer(update, context) -> None:
     """Add a job to the queue."""
-    chat_id = update.message.chat_id
+    chat_id = '-538080144'
     try:
         # args[0] should contain the time for the timer in seconds
         due = int(context.args[0])
         if due < 0:
-            update.message.reply_text('Sorry we can not go back to future!')
+            update.message.reply_text('Timer troppo basso')
             return
 
         job_removed = remove_job_if_exists(str(chat_id), context)
-        context.job_queue.run_once(alarm, due, context=chat_id, name=str(chat_id))
+        context.job_queue.run_once(repeater, due, context=chat_id, name=str(chat_id))
 
-        text = 'Timer successfully set!'
+        text = 'Timer impostato!'
         if job_removed:
             text += ' Old one was removed.'
         update.message.reply_text(text)
 
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /set <seconds>')
-
+I
 
 def unset(update, context) -> None:
     """Remove the job if the user changed their mind."""
@@ -75,7 +69,7 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
-def callback_minute(context):
+def repeater(context):
     context.bot.send_message(chat_id='-538080144', 
                              text='prova messaggio ogni 10 secondi')
 
