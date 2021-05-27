@@ -74,7 +74,8 @@ def unset(update, context) -> None:
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
-def callback_minute(context: telegram.ext.CallbackContext):
+
+def callback_minute(context):
     context.bot.send_message(chat_id='-538080144', 
                              text='prova messaggio ogni 10 secondi')
 
