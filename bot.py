@@ -74,6 +74,9 @@ def unset(update, context) -> None:
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
+def callback_minute(context: telegram.ext.CallbackContext):
+    context.bot.send_message(chat_id='-538080144', 
+                             text='prova messaggio ogni 10 secondi')
 
     
 def main():
@@ -85,6 +88,11 @@ def main():
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
+
+    j = updater.job_queue
+
+
+    job_minute = j.run_repeating(callback_minute, interval=10, first=10)
 
     
     # on different commands - answer in Telegram
